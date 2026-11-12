@@ -17,12 +17,12 @@ mainNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
   mainNav.classList.remove('mobile-open'); hamburger.classList.remove('open'); hamburger.setAttribute('aria-expanded', false);
 }));
 
-// Grille de prix : 1 = 50 $, 2 = 80 $, 3 à 9 = 40 $/u, 10 et + = 30 $/u
+// Grille de prix : 1 = 40 $, 2 = 70 $, 3 à 9 = 35 $/u, 10 et + = 30 $/u
 function prix(n){
   n = Math.max(1, Math.floor(n) || 1);
-  if (n === 1) return {total:50, unit:50};
-  if (n === 2) return {total:80, unit:40};
-  if (n < 10)  return {total:n*40, unit:40};
+  if (n === 1) return {total:40, unit:40};
+  if (n === 2) return {total:70, unit:35};
+  if (n < 10)  return {total:n*35, unit:35};
   return {total:n*30, unit:30};
 }
 const fmt = v => v.toLocaleString('fr-CA') + ' $';
@@ -30,7 +30,7 @@ const fmt = v => v.toLocaleString('fr-CA') + ' $';
 const qty = $('calc-qty');
 if (qty) {
   const render = () => {
-    const n = Math.max(1, Math.floor(+qty.value) || 1), p = prix(n), eco = n*50 - p.total;
+    const n = Math.max(1, Math.floor(+qty.value) || 1), p = prix(n), eco = n*40 - p.total;
     $('calc-total').textContent = fmt(p.total);
     let d = n === 1 ? '1 plaque' : n + ' × ' + fmt(p.unit);
     if (eco > 0) d += ' · vous économisez ' + fmt(eco);
@@ -58,9 +58,9 @@ if (oq) {
 // Liens de paiement Square : coller chaque lien créé dans Square (Paiements en ligne > Liens de paiement).
 // Un forfait sans lien n'est pas affiché ; sans aucun lien, la boîte reste cachée.
 const SQUARE = [
-  {label:'1 plaque', total:50, url:''},
-  {label:'2 plaques', total:80, url:''},
-  {label:'5 plaques', total:200, url:''},
+  {label:'1 plaque', total:40, url:''},
+  {label:'2 plaques', total:70, url:''},
+  {label:'5 plaques', total:175, url:''},
   {label:'10 plaques', total:300, url:''},
 ];
 const live = SQUARE.filter(l => /^https:\/\/(square\.link|checkout\.square\.site)\//.test(l.url));
