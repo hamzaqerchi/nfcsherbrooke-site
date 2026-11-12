@@ -443,3 +443,6 @@ a.hero-rating{display:inline-flex}
 .hero-hook{font-family:var(--font-display);font-weight:200;letter-spacing:-.025em;line-height:1.05;color:var(--ink);font-size:clamp(42px,5.6vw,76px);margin:0 0 24px;text-wrap:balance}
 .hero-hook span{display:inline-block;font-weight:650;color:var(--navy)}
 
+/* Logo carré à côté du nom */
+.brand-logo{width:40px;height:40px;border-radius:9px;flex:0 0 auto;display:block}
+
