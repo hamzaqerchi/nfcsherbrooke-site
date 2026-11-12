@@ -237,7 +237,7 @@ function calc(){
     [fmt(jour*7),'nouveaux avis par semaine'],
     [fmt(NET.sherAvis+deux),'avis dans 2 semaines (aujourd\'hui '+NET.sherAvis+')'],
     [dec(affiche)+' ★','note affichée dans 2 semaines*',true],
-    [fmt(an*NET.boutiques),'nouveaux avis par an pour les '+NET.boutiques+' boutiques']
+    [fmt(an*NET.boutiques),'avis par an si les '+NET.boutiques+' boutiques servaient autant de clients']
   ].map(([b,s,h])=>`<div class="stat${h?' hl':''}"><b>${b}</b><span>${s}</span></div>`).join('')+
   '<p class="note" style="grid-column:1/-1">* Si les nouveaux avis sont des 5 étoiles. Point de départ : '+NET.sherAvis+' avis à '+dec(NET.sherNote)+' ★, relevés le '+NET.date+'.</p>';
   const tb=document.getElementById('paliers');
