@@ -64,10 +64,10 @@ nav.bar{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:spac
 nav.bar button{font:600 15px var(--body);padding:10px 18px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--cream);cursor:pointer;min-width:110px}
 nav.bar button:disabled{opacity:.35;cursor:default}
 .dots{display:flex;gap:8px}
-.dots button{width:10px;height:10px;padding:0;min-width:0;border-radius:50%;border:0;background:var(--line);cursor:pointer}
-.dots button[aria-current="true"]{background:var(--gold)}
+nav.bar .dots button{width:10px;height:10px;padding:0;min-width:0;border-radius:50%;border:0;background:var(--line);cursor:pointer;flex:0 0 auto}
+nav.bar .dots button[aria-current="true"]{background:var(--gold)}
 button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
-@media (max-width:760px){.two{grid-template-columns:1fr;gap:22px}.two img{max-width:260px}body{font-size:16px}nav.bar button{min-width:0}}
+@media (max-width:760px){.two{grid-template-columns:1fr;gap:22px}.two img{max-width:260px}body{font-size:16px}nav.bar #prev,nav.bar #next{min-width:0;padding:10px 14px}nav.bar .dots{gap:6px}nav.bar .lbl{display:none}}
 @media (prefers-reduced-motion:reduce){.slide{transition:none}}
 </style>
 
@@ -186,9 +186,9 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 </div>
 
 <nav class="bar" aria-label="Navigation">
-  <button type="button" id="prev">← Précédent</button>
+  <button type="button" id="prev" aria-label="Précédent">←<span class="lbl"> Précédent</span></button>
   <div class="dots" id="dots"></div>
-  <button type="button" id="next">Suivant →</button>
+  <button type="button" id="next" aria-label="Suivant"><span class="lbl">Suivant </span>→</button>
 </nav>
 
 <script>
