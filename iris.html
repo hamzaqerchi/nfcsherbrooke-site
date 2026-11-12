@@ -50,6 +50,13 @@ ul.ticks li::before{content:"✓";position:absolute;left:0;top:1px;color:var(--g
 .seg button{font:600 15px var(--body);padding:10px 16px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--cream);cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#1A1203}
 .note{font-size:14px;color:var(--muted);margin-top:4px}
+.tablewrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px}
+table.paliers{width:100%;border-collapse:collapse;min-width:420px;font-size:clamp(15px,1.6vw,18px)}
+table.paliers th,table.paliers td{padding:12px 16px;border-bottom:1px solid var(--line);text-align:left}
+table.paliers th{font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+table.paliers .n{text-align:right;font-variant-numeric:tabular-nums}
+table.paliers tr.now td{color:var(--gold);font-weight:700}
+table.paliers td b{font:700 20px var(--display);color:#fff}
 .price{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:22px}
 ol.steps{list-style:none;counter-reset:s;padding:0;margin:0 0 26px;display:grid;gap:12px}
 ol.steps li{counter-increment:s;padding:14px 18px 14px 60px;position:relative;background:var(--panel);border:1px solid var(--line);border-radius:16px;font-size:clamp(16px,1.6vw,19px)}
@@ -126,17 +133,29 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
     <div class="calc">
       <div class="ctl">
         <label for="cli">Clients servis par mois, à Sherbrooke <output id="cliO"></output></label>
-        <input type="range" id="cli" min="40" max="600" step="10" value="150">
-        <small>Entrez le vrai nombre de remises de lunettes et d'examens par mois.</small>
+        <input type="range" id="cli" min="100" max="2000" step="50" value="1500">
+        <small>Environ 50 clients par jour, soit 1 500 par mois.</small>
       </div>
       <div class="ctl">
         <label for="taux">Clients qui laissent un avis <output id="tauxO"></output></label>
-        <div class="seg" id="seg"><button type="button" data-v="15">Scénario pessimiste · 15 %</button><button type="button" data-v="22">Scénario optimiste · 22 %</button></div>
-        <input type="range" id="taux" min="3" max="30" step="1" value="15" aria-label="Pourcentage de clients qui laissent un avis" style="margin-top:12px">
-        <small>À condition que l'équipe présente la plaque à chaque remise de lunettes. Le pilote mesure le vrai taux.</small>
+        <div class="seg" id="seg"><button type="button" data-v="10">Objectif prudent · 10 %</button><button type="button" data-v="20">Objectif optimiste · 20 %</button></div>
+        <input type="range" id="taux" min="3" max="30" step="1" value="10" aria-label="Pourcentage de clients qui laissent un avis" style="margin-top:12px">
+        <small>1 à 2 clients sur 10 à qui l'équipe présente la plaque. Le relevé dans 2 semaines mesure le vrai taux.</small>
       </div>
       <div class="grid" id="res"></div>
     </div>
+  </div>
+</section>
+
+<section class="slide" aria-label="Paliers d'étoiles">
+  <div class="inner">
+    <p class="kick">IRIS Sherbrooke · la note Google</p>
+    <h2>Combien d'avis 5 étoiles <b>pour chaque palier</b></h2>
+    <div class="tablewrap"><table class="paliers">
+      <thead><tr><th>Note affichée</th><th class="n">Avis 5 étoiles à ajouter</th><th class="n">Délai au rythme choisi</th></tr></thead>
+      <tbody id="paliers"></tbody>
+    </table></div>
+    <p class="note" id="palierNote"></p>
   </div>
 </section>
 
@@ -192,7 +211,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 </nav>
 
 <script>
-const NET={"n": 127, "total": 15957, "mediane": 121, "note": 4.73, "sherNote": 4.0, "sherAvis": 117, "boutiques": 139};
+const NET={"n": 127, "total": 15962, "mediane": 121, "note": 4.73, "sherNote": 4.1, "sherAvis": 122, "boutiques": 139, "date": "13 novembre 2026"};
 const fmt=n=>Math.round(n).toLocaleString('fr-CA');
 const dec=n=>n.toFixed(1).replace('.',',');
 document.getElementById('network').innerHTML=[
@@ -203,19 +222,29 @@ document.getElementById('sher').innerHTML=[
 ].map(([b,s,h])=>`<div class="stat${h?' hl':''}"><b>${b}</b><span>${s}</span></div>`).join('');
 
 const cli=document.getElementById('cli'),taux=document.getElementById('taux');
+// Google arrondit la note au dixième : 4,1 affiché veut dire au moins 4,05. On part de 4,05 pour rester prudent.
+const BASE=NET.sherNote-0.05;
+const avisPour=cible=>Math.max(0,Math.ceil(NET.sherAvis*(cible-0.05-BASE)/(5-(cible-0.05))));
+const noteApres=k=>(BASE*NET.sherAvis+5*k)/(NET.sherAvis+k);
 function calc(){
-  const c=+cli.value,t=+taux.value/100,mois=c*t,an=mois*12;
-  const note=(NET.sherNote*NET.sherAvis+NET.note*an)/(NET.sherAvis+an);
+  const c=+cli.value,t=+taux.value/100,jour=c*t/30,mois=c*t,an=mois*12,deux=jour*14;
+  const affiche=Math.floor(noteApres(deux)*10+0.5)/10;
   document.getElementById('cliO').textContent=c;
   document.getElementById('tauxO').textContent=taux.value+' %';
   [...document.querySelectorAll('#seg button')].forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===taux.value));
   document.getElementById('res').innerHTML=[
-    [fmt(mois),'nouveaux avis par mois à Sherbrooke'],
-    [fmt(NET.sherAvis+an),'avis à Sherbrooke dans 12 mois (aujourd\'hui '+NET.sherAvis+')'],
-    [dec(note)+' ★','note de Sherbrooke dans 12 mois*',true],
+    [fmt(jour),'nouveaux avis par jour'],
+    [fmt(jour*7),'nouveaux avis par semaine'],
+    [fmt(NET.sherAvis+deux),'avis dans 2 semaines (aujourd\'hui '+NET.sherAvis+')'],
+    [dec(affiche)+' ★','note affichée dans 2 semaines*',true],
     [fmt(an*NET.boutiques),'nouveaux avis par an pour les '+NET.boutiques+' boutiques']
   ].map(([b,s,h])=>`<div class="stat${h?' hl':''}"><b>${b}</b><span>${s}</span></div>`).join('')+
-  '<p class="note" style="grid-column:1/-1">* Si les nouveaux avis suivent la moyenne actuelle du réseau ('+dec(NET.note)+' ★). Estimation à confirmer avec le pilote.</p>';
+  '<p class="note" style="grid-column:1/-1">* Si les nouveaux avis sont des 5 étoiles. Point de départ : '+NET.sherAvis+' avis à '+dec(NET.sherNote)+' ★, relevés le '+NET.date+'.</p>';
+  const tb=document.getElementById('paliers');
+  tb.innerHTML=`<tr class="now"><td><b>${dec(NET.sherNote)} ★</b> aujourd'hui</td><td class="n">${NET.sherAvis} avis</td><td class="n">maintenant</td></tr>`+
+    [4.2,4.3,4.4,4.5,4.6,4.7,4.8].filter(x=>x>NET.sherNote+0.01).map(x=>{const k=avisPour(x),j=Math.ceil(k/Math.max(jour,0.01));
+      return `<tr><td><b>${dec(x)} ★</b></td><td class="n">+ ${fmt(k)}</td><td class="n">${j<=1?'1 jour':j<60?j+' jours':Math.round(j/30)+' mois'}</td></tr>`;}).join('');
+  document.getElementById('palierNote').textContent='Au rythme de '+fmt(jour)+' avis par jour ('+taux.value+' % de '+fmt(c)+' clients par mois). Calcul prudent : on suppose que la note actuelle est 4,05, le plus bas qui s\'affiche '+dec(NET.sherNote)+', et que chaque nouvel avis est un 5 étoiles.';
 }
 cli.addEventListener('input',calc);taux.addEventListener('input',calc);
 document.getElementById('seg').addEventListener('click',e=>{const b=e.target.closest('button');if(b){taux.value=b.dataset.v;calc();}});
