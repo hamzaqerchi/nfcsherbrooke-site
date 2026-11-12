@@ -58,7 +58,7 @@ if (oq) {
 // Liens de paiement Square : coller chaque lien créé dans Square (Paiements en ligne > Liens de paiement).
 // Un forfait sans lien n'est pas affiché ; sans aucun lien, la boîte reste cachée.
 const SQUARE = [
-  {label:'1 plaque', total:40, url:''},
+  {label:'1 plaque', total:40, url:'https://square.link/u/tdwn2YJb'},
   {label:'2 plaques', total:70, url:''},
   {label:'5 plaques', total:175, url:''},
   {label:'10 plaques', total:300, url:''},
