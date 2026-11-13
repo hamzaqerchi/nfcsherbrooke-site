@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Mes demandes · NFC Sherbrooke</title>
+<meta name="theme-color" content="#0B1220">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mes demandes">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/espace/manifest.webmanifest">
+<style>
+  :root { --fond:#0B1220; --texte:#FFFFFF; --gris:#B8C0D0; }
+  html, body { margin:0; height:100%; background:var(--fond); color:var(--texte); font:16px/1.5 -apple-system, "Segoe UI", Roboto, sans-serif; }
+  iframe { position:fixed; inset:0; width:100%; height:100%; border:0; background:#F4F6FA; padding-top:env(safe-area-inset-top); box-sizing:border-box; }
+  .accueil { min-height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px 16px; box-sizing:border-box; }
+  .accueil img { width:72px; height:72px; border-radius:16px; margin-bottom:16px; }
+  .accueil h1 { font-size:22px; margin:0 0 8px; }
+  .accueil p { color:var(--gris); margin:0 0 6px; max-width:360px; }
+</style>
+</head>
+<body>
+<div class="accueil" id="accueil" hidden>
+  <img src="/img/logo-80.png" alt="NFC Sherbrooke">
+  <h1>Espace client</h1>
+  <p>Ouvrez le lien personnel que NFC Sherbrooke vous a envoyé.</p>
+  <p>Ensuite, ajoutez cette page à votre écran d'accueil pour la retrouver en un clic.</p>
+</div>
+<script>
+(function () {
+  var APPLI = 'https://script.google.com/macros/s/AKfycbwkqUWmXXD9bigG7UJVSM0q36Ql_h7wo990kc0kbhXoU8dYZN9liSfSjBtOXbf204s/exec';
+  var cle = (location.hash || '').replace(/^#/, '').replace(/[^A-Za-z0-9]/g, '');
+  try {
+    if (cle) localStorage.setItem('nfc_espace', cle);
+    else cle = localStorage.getItem('nfc_espace') || '';
+  } catch (e) {}
+  if (cle.length < 20) { document.getElementById('accueil').hidden = false; return; }
+  if (!location.hash) { try { history.replaceState(null, '', '#' + cle); } catch (e) {} }
+  var f = document.createElement('iframe');
+  f.src = APPLI + '?k=' + encodeURIComponent(cle);
+  f.title = 'Mes demandes';
+  f.setAttribute('allow', 'clipboard-write');
+  document.body.appendChild(f);
+})();
+</script>
+</body>
+</html>
